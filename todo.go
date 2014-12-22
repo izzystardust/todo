@@ -119,17 +119,24 @@ func Parse(r string) (Todo, error) {
 	}
 
 	for _, token := range tokens {
-		if token[0] == ContextLeader {
+		switch {
+		case token[0] == ContextLeader:
 			addTag(token, &t.Contexts)
 			if err != nil {
 				return Todo{}, err
 			}
-		} else if token[0] == ProjectLeader {
+		case token[0] == ProjectLeader:
 			addTag(token, &t.Tags)
 			if err != nil {
 				return Todo{}, err
 			}
+		default:
+			if len(t.Title) > 0 {
+				t.Title += " "
+			}
+			t.Title += token
 		}
+
 	}
 	return t, nil
 }
