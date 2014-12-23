@@ -5,9 +5,9 @@
 package main
 
 import (
-	"bufio"
 	"fmt"
 	"os"
+	"os/exec"
 
 	"github.com/millere/todo"
 )
@@ -18,20 +18,33 @@ var cmdList = &Command{
 	Run:       runList,
 }
 
-func runList(cmd *Command, args []string) {
-	todoFile, err := os.Open("todo.txt")
+func runList(cmd *Command, conf config, args []string) {
+	todoFile, err := os.Open(conf.Todos)
 	if err != nil {
-		panic(err)
-	}
-	s := bufio.NewScanner(todoFile)
-	for s.Scan() {
-		line := s.Text()
-		fmt.Println(line)
-		todo, err := todo.Parse(line)
-		if err != nil {
-			println(err)
+		switch {
+		case os.IsNotExist(err):
+			fmt.Println("No tasks :)")
+			fmt.Print(fortune())
+		default:
+			fmt.Println(err)
 		}
-		fmt.Printf("%#v\n\n", todo)
+		return
 	}
-	fmt.Println("I would list my todos now")
+	todos, err := todo.FromReader(todoFile)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	for _, t := range todos {
+		fmt.Printf("%s\n\n%#v\n\n", t.Raw, t)
+	}
+}
+
+func fortune() string {
+	cmd := exec.Command("fortune")
+	output, err := cmd.Output()
+	if err != nil {
+		return ""
+	}
+	return string(output)
 }

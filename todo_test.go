@@ -4,18 +4,15 @@
 
 package todo
 
-import (
-	"sort"
-	"testing"
-)
+import "testing"
 
 func TestString(t *testing.T) {
 	todos := []struct {
-		todo   Todo
+		todo   Task
 		expect string
 	}{
 		{
-			Todo{Title: "Hello"}, "Hello",
+			Task{Title: "Hello"}, "Hello",
 		},
 	}
 
@@ -61,38 +58,4 @@ func TestParse(t *testing.T) {
 			t.Errorf("On case %v, got %v (expected %v)", cas.in, todo.String(), cas.expect)
 		}
 	}
-}
-
-func TestSort(t *testing.T) {
-	tests := []struct {
-		in  []Todo
-		out []Todo
-	}{
-		{[]Todo{makeWithPri(0), makeWithPri(1)}, []Todo{makeWithPri(1), makeWithPri(0)}},
-		{[]Todo{makeWithPri(3), makeWithPri(1), makeWithPri(0)}, []Todo{makeWithPri(1), makeWithPri(3), makeWithPri(0)}},
-	}
-	for _, test := range tests {
-		sorted := make([]Todo, len(test.in))
-		copy(sorted, test.in)
-		sort.Sort(ByPriority(sorted))
-		if !TodoSEq(sorted, test.out) {
-			t.Errorf("Got %#v, expected %#v", sorted, test.out)
-		}
-	}
-}
-
-func makeWithPri(pri int) Todo {
-	return Todo{Pri: Priority(pri)}
-}
-
-func TodoSEq(a, b []Todo) bool {
-	if len(a) != len(b) {
-		return false
-	}
-	for i := range a {
-		if a[i].Pri != b[i].Pri {
-			return false
-		}
-	}
-	return true
 }
