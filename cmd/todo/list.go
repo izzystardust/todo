@@ -17,10 +17,16 @@ import (
 var cmdList = &Command{
 	UsageLine: "list",
 	Short:     "lists todos",
-	Run:       runList,
 }
 
+func init() {
+	cmdList.Run = runList
+}
+
+var listSorted = cmdList.Flag.Bool("s", false, "")
+
 func runList(cmd *Command, conf config, args []string) {
+
 	todoFile, err := os.Open(conf.Todos)
 	if err != nil {
 		switch {
@@ -37,9 +43,10 @@ func runList(cmd *Command, conf config, args []string) {
 		fmt.Println(err)
 		return
 	}
-	//for _, t := range todos {
-	//fmt.Printf("%s\n\n%#v\n\n", t.Raw, t)
-	//}
+	if *listSorted {
+		sort.Sort(todos)
+	}
+
 	listPretty(todos)
 }
 
@@ -61,7 +68,6 @@ func listPretty(ts todo.TaskList) {
 		' ', // tabchar
 		0,   // flags
 	)
-	sort.Sort(ts)
 
 	fmt.Fprintln(tw, "\tdone\ttitle\tdue\tstart\t")
 	for i := range ts {
