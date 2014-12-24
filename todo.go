@@ -73,6 +73,7 @@ func FromReader(r io.Reader) (TaskList, error) {
 		if err != nil {
 			return nil, fmt.Errorf("%v on line %v", err, lno)
 		}
+		todo.index = lno
 		ret = append(ret, todo)
 		lno++
 	}
@@ -156,11 +157,10 @@ func addToTitle(title string, a string) string {
 }
 
 func (t Task) String() string {
-	out := ""
+	done := ""
 	if t.Done {
-		out = "x"
+		done = "x"
 	}
-	out += "\t"
 	due := ""
 	if !t.Due.IsZero() {
 		due = t.Due.Format(DateFormat)
@@ -169,8 +169,10 @@ func (t Task) String() string {
 	if !t.Start.IsZero() {
 		start = t.Start.Format(DateFormat)
 	}
-	out += fmt.Sprintf(
-		"%v\t%v\t%v\t",
+	out := fmt.Sprintf(
+		"%v\t%v\t%v\t%v\t%v\t",
+		t.index,
+		done,
 		t.Title,
 		due,
 		start,
