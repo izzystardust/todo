@@ -62,7 +62,8 @@ func listPretty(ts todo.TaskList) {
 		0,   // flags
 	)
 	sort.Sort(ts)
-	fmt.Fprintln(tw, "done\ttitle\tdue\tstart\t")
+
+	fmt.Fprintln(tw, "\tdone\ttitle\tdue\tstart\t")
 	for i := range ts {
 		fmt.Fprintln(tw, ts[i])
 	}
