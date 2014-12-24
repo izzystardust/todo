@@ -8,6 +8,8 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"sort"
+	"text/tabwriter"
 
 	"github.com/millere/todo"
 )
@@ -35,9 +37,10 @@ func runList(cmd *Command, conf config, args []string) {
 		fmt.Println(err)
 		return
 	}
-	for _, t := range todos {
-		fmt.Printf("%s\n\n%#v\n\n", t.Raw, t)
-	}
+	//for _, t := range todos {
+	//fmt.Printf("%s\n\n%#v\n\n", t.Raw, t)
+	//}
+	listPretty(todos)
 }
 
 func fortune() string {
@@ -47,4 +50,22 @@ func fortune() string {
 		return ""
 	}
 	return string(output)
+}
+
+func listPretty(ts todo.TaskList) {
+	tw := tabwriter.NewWriter(
+		os.Stdout,
+		2,   // minwidth
+		2,   // tabwidth
+		4,   // padding
+		' ', // tabchar
+		0,   // flags
+	)
+	sort.Sort(ts)
+	fmt.Fprintln(tw, "done\ttitle\tdue\tstart\t")
+	for i := range ts {
+		fmt.Fprintln(tw, ts[i])
+	}
+	tw.Flush()
+
 }

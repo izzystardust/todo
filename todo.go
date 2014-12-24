@@ -17,6 +17,52 @@ import (
 // A TaskList is a list of tasks
 type TaskList []Task
 
+func (l TaskList) Len() int      { return len(l) }
+func (l TaskList) Swap(i, j int) { l[i], l[j] = l[j], l[i] }
+func (l TaskList) Less(i, j int) bool {
+	// sort by:
+	// not done before done
+	// then by due date
+	// then by start date
+	// then alphabetically
+	if l[i].Done && !l[j].Done {
+		return false
+	}
+	if !l[i].Done && l[j].Done {
+		return true
+	}
+
+	dbefore, eq := before(l[i].Due, l[j].Due)
+	if !eq {
+		return dbefore
+	}
+
+	sbefore, eq := before(l[i].Start, l[j].Start)
+	if !eq {
+		return sbefore
+	}
+
+	return l[i].Title < l[j].Title
+}
+
+// returns before, equal
+func before(a, b time.Time) (bool, bool) {
+	if a.Equal(b) {
+		return false, true
+	}
+	if a.IsZero() && !b.IsZero() {
+		return false, false
+	}
+	if !a.IsZero() && b.IsZero() {
+		return true, false
+	}
+	if a.Before(b) {
+		return true, false
+	} else {
+		return false, false
+	}
+}
+
 func FromReader(r io.Reader) (TaskList, error) {
 	s := bufio.NewScanner(r)
 	var ret TaskList
@@ -88,15 +134,15 @@ func Parse(r string) (Task, error) {
 			} else {
 				t.Title = addToTitle(t.Title, token)
 			}
-		case strings.HasPrefix("s:", token):
-			start, err := time.ParseInLocation(DateFormat, token, time.Local)
+		case strings.HasPrefix(token, "s:"):
+			start, err := time.ParseInLocation(DateFormat, token[2:], time.Local)
 			if err == nil {
 				t.Start = start
 			} else {
 				t.Title = addToTitle(t.Title, token)
 			}
 		default:
-			t.Title += addToTitle(t.Title, token)
+			t.Title = addToTitle(t.Title, token)
 		}
 	}
 	return t, nil
@@ -110,15 +156,25 @@ func addToTitle(title string, a string) string {
 }
 
 func (t Task) String() string {
-	//BUG(@millere): impl this
-	now := time.Now()
-	switch {
-	case t.Start.Before(now) && t.Due.IsZero():
-		return t.Title
-	case t.Start.Before(now):
-		fmt.Sprintf("%v (due %v)", t.Title, t.Due)
-	default:
-		fmt.Sprintf("%v (postponed until %v, due %v)", t.Title, t.Start, t.Due)
+	out := ""
+	if t.Done {
+		out = "x"
 	}
-	panic("Wat")
+	out += "\t"
+	due := ""
+	if !t.Due.IsZero() {
+		due = t.Due.Format(DateFormat)
+	}
+	start := ""
+	if !t.Start.IsZero() {
+		start = t.Start.Format(DateFormat)
+	}
+	out += fmt.Sprintf(
+		"%v\t%v\t%v\t",
+		t.Title,
+		due,
+		start,
+	)
+
+	return out
 }
