@@ -4,7 +4,13 @@
 
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"os"
+	"strings"
+
+	"github.com/millere/todo"
+)
 
 var cmdAdd = &Command{
 	UsageLine: "add",
@@ -13,5 +19,15 @@ var cmdAdd = &Command{
 }
 
 func runAdd(cmd *Command, conf config, args []string) {
-	fmt.Println("Adding a todo. ")
+	in := strings.Join(args, " ")
+	_, err := todo.Parse(in)
+	if err != nil {
+		fmt.Println("Malformed task:", err)
+		return
+	}
+	fi, err := os.OpenFile(conf.Todos, os.O_APPEND|os.O_CREATE|os.O_RDWR, 0)
+	if err != nil {
+		fmt.Println("Wat:", err)
+	}
+	fmt.Fprintln(fi, in)
 }
