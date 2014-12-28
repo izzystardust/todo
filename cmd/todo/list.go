@@ -44,6 +44,11 @@ func runList(cmd *Command, conf config, args []string) {
 		fmt.Println(err)
 		return
 	}
+
+	for _, a := range args {
+		todos = todos.Filter(a)
+	}
+
 	if *listSorted {
 		sort.Sort(todos)
 	}

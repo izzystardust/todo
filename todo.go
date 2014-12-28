@@ -80,6 +80,18 @@ func FromReader(r io.Reader) (TaskList, error) {
 	return ret, nil
 }
 
+// Filter returns a new tasklist containing all of the tasks that
+// match the query
+func (ts TaskList) Filter(query string) TaskList {
+	var ret TaskList
+	for _, t := range ts {
+		if t.Matches(query) {
+			ret = append(ret, t)
+		}
+	}
+	return ret
+}
+
 // A Task is represents a item in a todo list
 type Task struct {
 	Title    string
@@ -179,4 +191,27 @@ func (t Task) String() string {
 	)
 
 	return out
+}
+
+func (t Task) Matches(query string) bool {
+	if len(query) == 0 {
+		return true
+	}
+	switch query[0] {
+	case '@':
+		return elementof(query[1:], t.Contexts)
+	case '+':
+		return elementof(query[1:], t.Tags)
+	default:
+		return strings.Contains(t.Title, query)
+	}
+}
+
+func elementof(item string, set []string) bool {
+	for _, i := range set {
+		if i == item {
+			return true
+		}
+	}
+	return false
 }
