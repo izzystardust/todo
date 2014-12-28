@@ -24,6 +24,7 @@ func init() {
 }
 
 var listSorted = cmdList.Flag.Bool("s", false, "")
+var listN = cmdList.Flag.Int("n", 0, "")
 
 func runList(cmd *Command, conf config, args []string) {
 
@@ -47,7 +48,7 @@ func runList(cmd *Command, conf config, args []string) {
 		sort.Sort(todos)
 	}
 
-	listPretty(todos)
+	listPretty(todos, *listN)
 }
 
 func fortune() string {
@@ -59,7 +60,7 @@ func fortune() string {
 	return string(output)
 }
 
-func listPretty(ts todo.TaskList) {
+func listPretty(ts todo.TaskList, max int) {
 	tw := tabwriter.NewWriter(
 		os.Stdout,
 		2,   // minwidth
@@ -68,10 +69,16 @@ func listPretty(ts todo.TaskList) {
 		' ', // tabchar
 		0,   // flags
 	)
+	if max == 0 {
+		max = len(ts)
+	}
 
 	fmt.Fprintln(tw, "\tdone\ttitle\tdue\tstart\t")
 	for i := range ts {
 		fmt.Fprintln(tw, ts[i])
+		if i >= max-1 {
+			break
+		}
 	}
 	tw.Flush()
 
