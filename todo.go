@@ -168,6 +168,33 @@ func addToTitle(title string, a string) string {
 	return title + a
 }
 
+// UnParse converts a task into a parseable string
+// This may not be the same string as the original,
+// but they will parse to the same task.
+func (t Task) UnParse() string {
+	var line string
+	if t.Done {
+		line += "x "
+	}
+	line += t.Title
+	if !t.Due.IsZero() {
+		line += " " + t.Due.Format(DateFormat)
+	}
+	if !t.Start.IsZero() {
+		line += " s:" + t.Start.Format(DateFormat)
+	}
+
+	for _, context := range t.Contexts {
+		line += " @" + context
+	}
+
+	for _, tag := range t.Tags {
+		line += " +" + tag
+	}
+
+	return line
+}
+
 func (t Task) String() string {
 	done := ""
 	if t.Done {

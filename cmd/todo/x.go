@@ -35,15 +35,33 @@ func runX(cmd *Command, conf config, args []string) {
 		return
 	}
 
+	didWork := false
 	for i := range todos {
 		//BUG(@millere): off-by-one error
-		if elementOf(toMark, i) {
+		if elementOf(toMark, i+1) {
 			todos[i].Done = true
+			didWork = true
 		}
 	}
-	// TODO: write out completed tasks
+
+	if didWork {
+		file, err := os.Create(conf.Todos)
+		if err != nil {
+			fmt.Println("Couldn't modify todo file:", err)
+			return
+		}
+		// TODO: if -s sort before writing
+		for i := range todos {
+			fmt.Fprintln(file, todos[i].UnParse())
+		}
+	}
 }
 
 func elementOf(as []int, a int) bool {
+	for _, b := range as {
+		if b == a {
+			return true
+		}
+	}
 	return false
 }
