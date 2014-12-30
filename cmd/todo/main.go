@@ -72,6 +72,7 @@ func (c *Command) Runnable() bool {
 var commands = []*Command{
 	cmdAdd,
 	cmdList,
+	cmdX,
 	//helpC,
 	//helpFileType,
 	//helpGopath,
