@@ -80,9 +80,11 @@ func listPretty(ts todo.TaskList, max int) {
 
 	fmt.Fprintln(tw, "\tdone\ttitle\tdue\tstart\t")
 	for i := range ts {
-		fmt.Fprintln(tw, ts[i])
-		if i >= max-1 {
-			break
+		if !ts[i].Done {
+			fmt.Fprintln(tw, ts[i])
+			if i >= max-1 {
+				break
+			}
 		}
 	}
 	tw.Flush()
