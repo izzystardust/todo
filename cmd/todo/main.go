@@ -73,6 +73,7 @@ var commands = []*Command{
 	cmdAdd,
 	cmdList,
 	cmdX,
+	cmdArchive,
 	//helpC,
 	//helpFileType,
 	//helpGopath,
