@@ -78,7 +78,7 @@ func listPretty(ts todo.TaskList, max int) {
 		max = len(ts)
 	}
 
-	fmt.Fprintln(tw, "\tdone\ttitle\tdue\tstart\t")
+	fmt.Fprintln(tw, "\tdone\ttitle\tdue\tstart\tcontexts\ttags\t")
 	for i := range ts {
 		if !ts[i].Done {
 			fmt.Fprintln(tw, ts[i])

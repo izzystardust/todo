@@ -208,13 +208,17 @@ func (t Task) String() string {
 	if !t.Start.IsZero() {
 		start = t.Start.Format(DateFormat)
 	}
+	contexts := strings.Join(t.Contexts, ", ")
+	tags := strings.Join(t.Tags, ", ")
 	out := fmt.Sprintf(
-		"%v\t%v\t%v\t%v\t%v\t",
+		"%v\t%v\t%v\t%v\t%v\t%v\t%v\t",
 		t.index,
 		done,
 		t.Title,
 		due,
 		start,
+		contexts,
+		tags,
 	)
 
 	return out
