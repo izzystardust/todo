@@ -40,7 +40,51 @@ To install from source, you'll need [Go](https://golang.org) installed. With a p
 
 ### Usage
 
-NOTE: THIS IS IN EARLY DEVELOPMENT. Stuff probably doesn't work right.
+Todo has four commands: add, list, x, and archive.
+
+#### add
+
+```
+todo add update readme 2015-01-08 @computer
+```
+
+Add parses the given line as a todo to check syntax and adds it to the todo file.
+
+#### list
+
+```
+todo list
+todo list @computer
+todo list readme
+todo list -s
+```
+
+List lists todos. If words are given, it filters by matching all of those words. The `-s` flag sorts the results in a way I find useful. This `-a` flag causes completed tasks to be listed.
+
+#### help
+
+```
+todo help
+todo help list
+```
+
+Prints usage information.
+
+#### x
+
+```
+todo x 3
+```
+
+X marks task n as completed.
+
+### archive
+
+```
+todo archive
+```
+
+Archive moves all completed tasks from the todo file to the archive file.
 
 ## The Library
 
