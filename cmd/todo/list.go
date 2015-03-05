@@ -25,6 +25,7 @@ func init() {
 
 var listSorted = cmdList.Flag.Bool("s", false, "")
 var listN = cmdList.Flag.Int("n", 0, "")
+var listExclude = cmdList.Flag.Bool("i", false, "")
 
 func runList(cmd *Command, conf config, args []string) {
 
@@ -46,7 +47,11 @@ func runList(cmd *Command, conf config, args []string) {
 	}
 
 	for _, a := range args {
-		todos = todos.Filter(a)
+		if !*listExclude {
+			todos = todos.Filter(a)
+		} else {
+			todos = todos.FilterNot(a)
+		}
 	}
 
 	if *listSorted {

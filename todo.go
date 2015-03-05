@@ -92,6 +92,18 @@ func (ts TaskList) Filter(query string) TaskList {
 	return ret
 }
 
+// FilterNot returns a new tasklist containing all of the tasks that
+// do not match the query
+func (ts TaskList) FilterNot(query string) TaskList {
+	var ret TaskList
+	for _, t := range ts {
+		if !t.Matches(query) {
+			ret = append(ret, t)
+		}
+	}
+	return ret
+}
+
 // A Task is represents a item in a todo list
 type Task struct {
 	Title    string
